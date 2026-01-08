@@ -10,7 +10,6 @@ build
 dist
 
 # Environment
-.env
 .env.local
 .env*.local
 
