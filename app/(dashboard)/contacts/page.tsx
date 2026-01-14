@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   Heading,
+  Input,
   Menu,
   Portal,
   Skeleton,
@@ -13,7 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ContactsApi, type Contact } from "@/lib/client/api";
 import { AddContactDialog } from "@/components/contacts/AddContactDialog";
 import { EditContactDialog } from "@/components/contacts/EditContactDialog";
@@ -23,12 +24,23 @@ const PAGE_SIZE = 5;
 
 export default function ContactsPage() {
   const [page, setPage] = useState(0);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [editContact, setEditContact] = useState<Contact | null>(null);
   const [deleteContact, setDeleteContact] = useState<Contact | null>(null);
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(0); // Reset to first page when search changes
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const { data, isLoading } = useQuery({
-    queryKey: ["contacts", page],
-    queryFn: () => ContactsApi.list(page * PAGE_SIZE, PAGE_SIZE),
+    queryKey: ["contacts", page, debouncedSearch],
+    queryFn: () => ContactsApi.list(page * PAGE_SIZE, PAGE_SIZE, debouncedSearch),
   });
 
   const exportMutation = useMutation({
@@ -65,6 +77,13 @@ export default function ContactsPage() {
             <AddContactDialog />
           </Flex>
         </Flex>
+
+        <Input
+          placeholder="Search by organisation or description..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          maxW="400px"
+        />
 
         <Box bg="white" borderRadius="lg" boxShadow="sm" overflow="hidden">
           <Table.Root>
