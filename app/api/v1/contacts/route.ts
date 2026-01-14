@@ -11,11 +11,22 @@ export async function GET(request: NextRequest) {
     }
 
     const { skip, limit } = parseQueryParams(request);
+    const searchParams = new URL(request.url).searchParams;
+    const search = searchParams.get("q") || "";
 
     // Superusers see all contacts, regular users see only their own
-    const whereClause = result.user.isSuperuser
-      ? {}
-      : { ownerId: result.user.id };
+    const ownerFilter = result.user.isSuperuser ? {} : { ownerId: result.user.id };
+
+    // Apply search filter if provided
+    const whereClause = search
+      ? {
+          ...ownerFilter,
+          OR: [
+            { organisation: { contains: search, mode: "insensitive" as const } },
+            { description: { contains: search, mode: "insensitive" as const } },
+          ],
+        }
+      : ownerFilter;
 
     const [contacts, count] = await Promise.all([
       prisma.contact.findMany({
