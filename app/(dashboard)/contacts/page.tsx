@@ -13,7 +13,7 @@ import {
   Table,
   Text,
 } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { ContactsApi, type Contact } from "@/lib/client/api";
 import { AddContactDialog } from "@/components/contacts/AddContactDialog";
@@ -43,6 +43,20 @@ export default function ContactsPage() {
     queryFn: () => ContactsApi.list(page * PAGE_SIZE, PAGE_SIZE, debouncedSearch),
   });
 
+  const exportMutation = useMutation({
+    mutationFn: ContactsApi.exportCsv,
+    onSuccess: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "contacts.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    },
+  });
+
   const contacts = data?.data || [];
   const totalCount = data?.count || 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -52,7 +66,16 @@ export default function ContactsPage() {
       <Stack gap={6}>
         <Flex justify="space-between" align="center">
           <Heading size="xl">Contacts</Heading>
-          <AddContactDialog />
+          <Flex gap={2}>
+            <Button
+              variant="outline"
+              onClick={() => exportMutation.mutate()}
+              loading={exportMutation.isPending}
+            >
+              Download CSV
+            </Button>
+            <AddContactDialog />
+          </Flex>
         </Flex>
 
         <Input

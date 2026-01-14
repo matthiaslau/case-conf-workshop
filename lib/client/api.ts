@@ -230,4 +230,15 @@ export const ContactsApi = {
     });
     return handleResponse<void>(response);
   },
+
+  async exportCsv(): Promise<Blob> {
+    const response = await fetch(`${API_BASE}/contacts/export`, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: "An error occurred" }));
+      throw new Error(error.detail || "An error occurred");
+    }
+    return response.blob();
+  },
 };
