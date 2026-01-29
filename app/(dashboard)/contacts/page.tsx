@@ -79,7 +79,7 @@ export default function ContactsPage() {
         </Flex>
 
         <Input
-          placeholder="Search by organisation or description..."
+          placeholder="Search by organisation, contact name, or description..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           maxW="400px"
@@ -90,6 +90,7 @@ export default function ContactsPage() {
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader>Organisation</Table.ColumnHeader>
+                <Table.ColumnHeader>Contact Name</Table.ColumnHeader>
                 <Table.ColumnHeader>Description</Table.ColumnHeader>
                 <Table.ColumnHeader width="100px">Actions</Table.ColumnHeader>
               </Table.Row>
@@ -107,11 +108,14 @@ export default function ContactsPage() {
                     <Table.Cell>
                       <Skeleton height="20px" />
                     </Table.Cell>
+                    <Table.Cell>
+                      <Skeleton height="20px" />
+                    </Table.Cell>
                   </Table.Row>
                 ))
               ) : contacts.length === 0 ? (
                 <Table.Row>
-                  <Table.Cell colSpan={3}>
+                  <Table.Cell colSpan={4}>
                     <Text textAlign="center" color="gray.500" py={4}>
                       No contacts yet. Add your first contact!
                     </Text>
@@ -122,6 +126,9 @@ export default function ContactsPage() {
                   <Table.Row key={contact.id}>
                     <Table.Cell fontWeight="medium">
                       {contact.organisation}
+                    </Table.Cell>
+                    <Table.Cell color="gray.600">
+                      {contact.contactName || "-"}
                     </Table.Cell>
                     <Table.Cell color="gray.600">
                       {contact.description || "-"}
