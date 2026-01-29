@@ -29,9 +29,10 @@ export async function GET(request: NextRequest) {
     });
 
     // Build CSV content
-    const headers = ["Organisation", "Description", "Owner Name", "Owner Email", "Created At"];
+    const headers = ["Organisation", "Contact Name", "Description", "Owner Name", "Owner Email", "Created At"];
     const rows: string[][] = contacts.map((contact: typeof contacts[number]) => [
       escapeCsvField(contact.organisation),
+      escapeCsvField(contact.contactName || ""),
       escapeCsvField(contact.description || ""),
       escapeCsvField(contact.owner.fullName || ""),
       escapeCsvField(contact.owner.email),

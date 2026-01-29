@@ -67,9 +67,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     const body = await request.json();
-    const { organisation, description } = body;
+    const { organisation, contactName, description } = body;
 
-    const updateData: { organisation?: string; description?: string | null } = {};
+    const updateData: { organisation?: string; contactName?: string | null; description?: string | null } = {};
 
     if (organisation !== undefined) {
       if (!organisation) {
@@ -79,6 +79,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         return errorResponse(400, "Organisation must be at most 255 characters");
       }
       updateData.organisation = organisation;
+    }
+
+    if (contactName !== undefined) {
+      if (contactName && contactName.length > 255) {
+        return errorResponse(400, "Contact name must be at most 255 characters");
+      }
+      updateData.contactName = contactName || null;
     }
 
     if (description !== undefined) {

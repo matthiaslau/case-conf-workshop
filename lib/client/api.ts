@@ -17,6 +17,7 @@ export interface UserPublic {
 export interface Contact {
   id: string;
   organisation: string;
+  contactName: string | null;
   description: string | null;
   ownerId: string;
   owner?: {
@@ -195,7 +196,7 @@ export const ContactsApi = {
     return handleResponse<PaginatedResponse<Contact>>(response);
   },
 
-  async create(data: { organisation: string; description?: string }): Promise<Contact> {
+  async create(data: { organisation: string; contactName?: string; description?: string }): Promise<Contact> {
     const response = await fetch(`${API_BASE}/contacts`, {
       method: "POST",
       headers: getAuthHeaders(),
@@ -213,7 +214,7 @@ export const ContactsApi = {
 
   async update(
     contactId: string,
-    data: { organisation?: string; description?: string }
+    data: { organisation?: string; contactName?: string; description?: string }
   ): Promise<Contact> {
     const response = await fetch(`${API_BASE}/contacts/${contactId}`, {
       method: "PUT",
