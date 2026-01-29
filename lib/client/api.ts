@@ -241,4 +241,28 @@ export const ContactsApi = {
     }
     return response.blob();
   },
+
+  async importCsv(file: File): Promise<ImportResult> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    const headers: HeadersInit = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE}/contacts/import`, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+    return handleResponse<ImportResult>(response);
+  },
 };
+
+export interface ImportResult {
+  imported: number;
+  skipped: number;
+  errors: string[];
+}
