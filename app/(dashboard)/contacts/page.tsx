@@ -19,6 +19,7 @@ import { ContactsApi, type Contact } from "@/lib/client/api";
 import { AddContactDialog } from "@/components/contacts/AddContactDialog";
 import { EditContactDialog } from "@/components/contacts/EditContactDialog";
 import { DeleteContactDialog } from "@/components/contacts/DeleteContactDialog";
+import { ImportContactsDialog } from "@/components/contacts/ImportContactsDialog";
 
 const PAGE_SIZE = 5;
 
@@ -74,6 +75,7 @@ export default function ContactsPage() {
             >
               Download CSV
             </Button>
+            <ImportContactsDialog />
             <AddContactDialog />
           </Flex>
         </Flex>
