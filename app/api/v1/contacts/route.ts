@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
           ...ownerFilter,
           OR: [
             { organisation: { contains: search, mode: "insensitive" as const } },
+            { contactName: { contains: search, mode: "insensitive" as const } },
             { description: { contains: search, mode: "insensitive" as const } },
           ],
         }
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { organisation, description } = body;
+    const { organisation, contactName, description } = body;
 
     if (!organisation) {
       return errorResponse(400, "Organisation is required");
@@ -76,9 +77,14 @@ export async function POST(request: NextRequest) {
       return errorResponse(400, "Organisation must be at most 255 characters");
     }
 
+    if (contactName && contactName.length > 255) {
+      return errorResponse(400, "Contact name must be at most 255 characters");
+    }
+
     const contact = await prisma.contact.create({
       data: {
         organisation,
+        contactName: contactName || null,
         description: description || null,
         ownerId: result.user.id,
       },

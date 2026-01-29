@@ -16,6 +16,7 @@ import { ContactsApi, type Contact } from "@/lib/client/api";
 
 interface EditContactFormData {
   organisation: string;
+  contactName?: string;
   description?: string;
 }
 
@@ -42,6 +43,7 @@ export function EditContactDialog({
     if (open) {
       reset({
         organisation: contact.organisation,
+        contactName: contact.contactName || "",
         description: contact.description || "",
       });
     }
@@ -86,6 +88,22 @@ export function EditContactDialog({
                     />
                     {errors.organisation && (
                       <Field.ErrorText>{errors.organisation.message}</Field.ErrorText>
+                    )}
+                  </Field.Root>
+
+                  <Field.Root invalid={!!errors.contactName}>
+                    <Field.Label>Contact Name</Field.Label>
+                    <Input
+                      {...register("contactName", {
+                        maxLength: {
+                          value: 255,
+                          message: "Contact name must be at most 255 characters",
+                        },
+                      })}
+                      placeholder="Enter contact name (optional)"
+                    />
+                    {errors.contactName && (
+                      <Field.ErrorText>{errors.contactName.message}</Field.ErrorText>
                     )}
                   </Field.Root>
 
